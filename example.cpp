@@ -1,5 +1,6 @@
 #include <iostream>
 using namespace std;
 int main() {
-    cot<<"Hello World"<<endl;
+    cout<<"Hello World"<<endl;
+    cout<<"ChanMIn"<<endl;
 }
