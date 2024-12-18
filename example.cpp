@@ -2,262 +2,320 @@
 #include <iomanip>
 #include <vector>
 #include <algorithm>
-#include <limits>
+#include <limits> // For numeric_limits
 using namespace std;
 
-// Global security tax constant
-const int SECURITY_TAX = 10;
+// Global variable
+int security_tax = 10;
 
-class Employee {
-protected:
-    int employeeID;
-    string name;
-    string position;
-    string type;
-    string startDate;
-    double basicSalary;
+class Employee
+{
+private:
+    int employee_ID;
+    string employee_name;
+    string employee_position;
+    string employee_type;
+    string start_date;
+    double basic_salary;
 
 public:
     virtual ~Employee() {}
 
-    // Getters
-    int getID() const { return employeeID; }
-    string getName() const { return name; }
-    string getPosition() const { return position; }
-    string getType() const { return type; }
-    string getStartDate() const { return startDate; }
-    double getBasicSalary() const { return basicSalary; }
+    // Getter methods
+    int getEmployeeID() { return employee_ID; }
+    string getName() { return employee_name; }
+    string getPosition() { return employee_position; }
+    string getEmployeeType() { return employee_type; }
+    string getStartDate() { return start_date; }
+    double getBasicSalary() { return basic_salary; }
 
-    // Set employee details
-    void setEmployeeData() {
-        cout << "Enter Employee ID: ";
-        cin >> employeeID;
-        cin.ignore();
+    // Default constructor
+    Employee() : employee_ID(0), employee_name(""), employee_position(""), employee_type(""), start_date(""), basic_salary(0) {}
 
+    // Set employee data
+    void setData()
+    {
+        cout << "\n==============================================\n";
+        cout << "\t Enter Employee Details" << endl;
+        cout << "==============================================\n";
+
+        cout << "\nEnter Employee ID: ";
+        cin >> employee_ID;
+        cin.ignore(); // Clear input buffer
         cout << "Enter Employee Name: ";
-        getline(cin, name);
+        getline(cin, employee_name);
 
-        while (true) {
-            cout << "Enter Employee Position (Fulltime: Barista, Cashier, Supervisor | Part-time: Cleaner, Kitchen Staff, Waiter/Waitress): ";
-            getline(cin, position);
+        // Loop until a valid employee position is entered
+        while (true)
+        {
+            cout << "Enter Employee Position (e.g., Barista, Cashier, Supervisor): ";
+            getline(cin, employee_position);
 
-            if (position == "Barista" || position == "barista") {
-                basicSalary = 1920;
-                type = "Fulltime";
+            if (employee_position == "Barista" || employee_position == "barista")
+            {
+                basic_salary = 1920;
+                employee_type = "Fulltime";
                 break;
-            } else if (position == "Cashier" || position == "cashier") {
-                basicSalary = 1790;
-                type = "Fulltime";
+            }
+            else if (employee_position == "Cashier" || employee_position == "cashier")
+            {
+                basic_salary = 1790;
+                employee_type = "Fulltime";
                 break;
-            } else if (position == "Supervisor" || position == "supervisor") {
-                basicSalary = 2400;
-                type = "Fulltime";
+            }
+            else if (employee_position == "Cleaner" || employee_position == "cleaner")
+            {
+                basic_salary = 1400;
+                employee_type = "Parttime";
                 break;
-            } else if (position == "Cleaner" || position == "cleaner") {
-                basicSalary = 1400;
-                type = "Part-time";
+            }
+            else if (employee_position == "Kitchen Staff" || employee_position == "kitchen staff")
+            {
+                basic_salary = 1850;
+                employee_type = "Parttime";
                 break;
-            } else if (position == "Kitchen Staff" || position == "kitchen staff") {
-                basicSalary = 1850;
-                type = "Part-time";
+            }
+            else if (employee_position == "Waiter" || employee_position == "waiter" || employee_position == "Waitress" || employee_position == "waitress")
+            {
+                basic_salary = 1700;
+                employee_type = "Parttime";
                 break;
-            } else if (position == "Waiter" || position == "waiter" || position == "Waitress" || position == "waitress") {
-                basicSalary = 1700;
-                type = "Part-time";
+            }
+            else if (employee_position == "Supervisor" || employee_position == "supervisor")
+            {
+                basic_salary = 2400;
+                employee_type = "Fulltime";
                 break;
-            } else {
-                cout << "Invalid position. Please enter a valid position." << endl;
+            }
+            else
+            {
+                cout << "Invalid Employee Position. Please try again." << endl;
             }
         }
 
-        cout << "Enter Start Date (dd/mm/yy): ";
-        cin >> startDate;
+        cout << "Enter Employee Start Date (dd/mm/yy): ";
+        cin >> start_date;
+        cout << "==============================================\n\n";
     }
 
-    // Display employee details
-    void displayEmployeeData() const {
-        cout << left << setw(20) << "Employee ID" << ": " << employeeID << endl;
-        cout << left << setw(20) << "Name" << ": " << name << endl;
-        cout << left << setw(20) << "Position" << ": " << position << endl;
-        cout << left << setw(20) << "Type" << ": " << type << endl;
-        cout << left << setw(20) << "Start Date" << ": " << startDate << endl;
-        cout << left << setw(20) << "Basic Salary" << ": " << fixed << setprecision(2) << basicSalary << endl;
+    void getData()
+    {
+        // Display with a tidy table design
+        cout << left << setw(20) << "ID" << ": " << setw(20) << employee_ID << endl;
+        cout << left << setw(20) << "Name" << ": " << setw(20) << employee_name << endl;
+        cout << left << setw(20) << "Position" << ": " << setw(20) << employee_position << endl;
+        cout << left << setw(20) << "Type" << ": " << setw(20) << employee_type << endl;
+        cout << left << setw(20) << "Start Date" << ": " << setw(20) << start_date << endl;
+        cout << left << setw(20) << "Basic Salary" << ": " << setw(20) << fixed << setprecision(2) << basic_salary << endl;
     }
 };
 
-class FullTime : public Employee {
+class FullTime : public Employee
+{
 private:
-    int leaveDays;
-    double overtimeHours;
-    double bonus;
-    double overtimePay;
-    double grossSalary;
-    double netSalary;
+    int leave_days;
+    double overtime_hours = 0;
+    double bonus = 0;
+    double overtime_fees = 0;
+    double total_amount = 0;
+    double tax_salary = 0;
+    double net_salary = 0;
 
 public:
-    FullTime() : leaveDays(0), overtimeHours(0), bonus(0), overtimePay(0), grossSalary(0), netSalary(0) {}
+    FullTime() : leave_days(0), overtime_hours(0.0) {}
 
-    void setFullTimeDetails() {
-        setEmployeeData();
-
+    void setFullTimeData()
+    {
+        setData(); // Set common data from Employee
         cout << "Enter number of leave days: ";
-        cin >> leaveDays;
-
+        cin >> leave_days;
         cout << "Enter overtime hours: ";
-        cin >> overtimeHours;
+        cin >> overtime_hours;
 
-        calculateSalaries();
-    }
-
-    void calculateSalaries() {
         // Calculate bonus based on leave days
-        if (leaveDays == 0) {
+        if (leave_days == 0)
+        {
             bonus = 300;
-        } else if (leaveDays == 1) {
+        }
+        else if (leave_days == 1)
+        {
             bonus = 200;
-        } else if (leaveDays == 2) {
+        }
+        else if (leave_days == 2)
+        {
             bonus = 100;
-        } else {
+        }
+        else
+        {
             bonus = 0;
         }
 
-        overtimePay = ((basicSalary / 30) / 8) * overtimeHours * 2;
-        grossSalary = basicSalary + bonus + overtimePay;
-
-        double tax = (grossSalary * 2) / 100;
-        netSalary = grossSalary - tax - SECURITY_TAX;
+        calculateFulltimeTotalSalary();
     }
 
-    void displayFullTimeDetails() const {
-        displayEmployeeData();
-        cout << left << setw(20) << "Leave Days" << ": " << leaveDays << endl;
-        cout << left << setw(20) << "Overtime Hours" << ": " << fixed << setprecision(2) << overtimeHours << endl;
-        cout << left << setw(20) << "Bonus" << ": $" << bonus << endl;
-        cout << left << setw(20) << "Overtime Pay" << ": $" << overtimePay << endl;
-        cout << left << setw(20) << "Gross Salary" << ": $" << grossSalary << endl;
-        cout << left << setw(20) << "Net Salary" << ": $" << netSalary << endl;
+    double calculateFulltimeTotalSalary()
+    {
+        double salary = getBasicSalary();
+
+        // Calculate overtime fees
+        overtime_fees = (((salary / 30) / 8) * overtime_hours) * 2;
+
+        // Calculate total amount considering leave days and overtime
+        if (leave_days < 4 && overtime_hours >= 0)
+        {
+            total_amount = salary + bonus + overtime_fees;
+            tax_salary = (total_amount / 100) * 2;
+        }
+        else if (leave_days > 4 && overtime_hours > 0)
+        {
+            total_amount = salary - ((salary / 100) * 1) + overtime_fees - bonus;
+            tax_salary = (total_amount / 100) * 2;
+        }
+        else
+        {
+            total_amount = salary - bonus + overtime_fees;
+            tax_salary = (total_amount / 100) * 2;
+        }
+
+        return total_amount;
     }
 
-    double getNetSalary() const { return netSalary; }
+    double calculateFulltimeTotalNetSalary()
+    {
+        if (total_amount == 0)
+            calculateFulltimeTotalSalary();
+
+        net_salary = total_amount - ((total_amount / 100) * 2) - security_tax;
+        return net_salary;
+    }
+
+    void getFullTimeData()
+    {
+        calculateFulltimeTotalSalary();
+        calculateFulltimeTotalNetSalary();
+
+        cout << "\n==============================================" << endl;
+        cout << "\t Full-Time Employee Details" << endl;
+        cout << "==============================================\n";
+        getData();
+        cout << left << setw(20) << "Leave Days" << ": " << setw(20) << leave_days << endl;
+        cout << left << setw(20) << "Overtime Hours" << ": " << setw(20) << fixed << setprecision(2) << overtime_hours << endl;
+        cout << left << setw(20) << "Overtime Fees" << ": $" << setw(20) << fixed << setprecision(2) << overtime_fees << endl;
+        cout << left << setw(20) << "Bonus" << ": $" << setw(20) << fixed << setprecision(2) << bonus << endl;
+        cout << left << setw(20) << "Tax Deduction" << ": $" << setw(20) << fixed << setprecision(2) << tax_salary << endl;
+        cout << left << setw(20) << "Security Deduction" << ": $" << setw(20) << security_tax << endl;
+        cout << left << setw(20) << "Total Amount" << ": $" << setw(20) << fixed << setprecision(2) << total_amount << endl;
+        cout << left << setw(20) << "Total Net Amount" << ": $" << setw(20) << fixed << setprecision(2) << net_salary << endl;
+        cout << "==============================================\n";
+    }
 };
 
-class PartTime : public Employee {
+class PartTime : public Employee
+{
 private:
-    double workingHours;
-    double hourlyRate;
-    double grossSalary;
-    double netSalary;
+    double hourly_wage = 0;
+    double hours_worked = 0;
+    double total_wage = 0;
 
 public:
-    PartTime() : workingHours(0), hourlyRate(0), grossSalary(0), netSalary(0) {}
+    void setPartTimeData()
+    {
+        setData(); // Set common data from Employee
 
-    void setPartTimeDetails() {
-        setEmployeeData();
+        cout << "Enter hourly wage: ";
+        cin >> hourly_wage;
+        cout << "Enter hours worked: ";
+        cin >> hours_worked;
 
-        cout << "Enter total working hours (monthly): ";
-        cin >> workingHours;
-
-        calculateSalaries();
+        calculatePartTimeTotalWage();
     }
 
-    void calculateSalaries() {
-        hourlyRate = (basicSalary / 30) / 8;
-        grossSalary = workingHours * hourlyRate;
-
-        double tax = (grossSalary * 2) / 100;
-        netSalary = grossSalary - tax - SECURITY_TAX;
+    double calculatePartTimeTotalWage()
+    {
+        total_wage = hourly_wage * hours_worked;
+        return total_wage;
     }
 
-    void displayPartTimeDetails() const {
-        displayEmployeeData();
-        cout << left << setw(20) << "Working Hours" << ": " << fixed << setprecision(2) << workingHours << endl;
-        cout << left << setw(20) << "Hourly Rate" << ": $" << hourlyRate << endl;
-        cout << left << setw(20) << "Gross Salary" << ": $" << grossSalary << endl;
-        cout << left << setw(20) << "Net Salary" << ": $" << netSalary << endl;
-    }
+    void getPartTimeData()
+    {
+        calculatePartTimeTotalWage();
 
-    double getNetSalary() const { return netSalary; }
+        cout << "\n==============================================" << endl;
+        cout << "\t Part-Time Employee Details" << endl;
+        cout << "==============================================\n";
+        getData();
+        cout << left << setw(20) << "Hourly Wage" << ": $" << setw(20) << fixed << setprecision(2) << hourly_wage << endl;
+        cout << left << setw(20) << "Hours Worked" << ": " << setw(20) << fixed << setprecision(2) << hours_worked << endl;
+        cout << left << setw(20) << "Total Wage" << ": $" << setw(20) << fixed << setprecision(2) << total_wage << endl;
+        cout << "==============================================\n";
+    }
 };
 
-vector<FullTime> fullTimeEmployees;
-vector<PartTime> partTimeEmployees;
-
-void displayAllEmployeesSorted() {
-    struct EmployeeRecord {
-        string type;
-        double netSalary;
-        string name;
-    };
-
-    vector<EmployeeRecord> records;
-
-    for (const auto &ft : fullTimeEmployees) {
-        records.push_back({"FullTime", ft.getNetSalary(), ft.getName()});
-    }
-    for (const auto &pt : partTimeEmployees) {
-        records.push_back({"PartTime", pt.getNetSalary(), pt.getName()});
-    }
-
-    sort(records.begin(), records.end(), [](const EmployeeRecord &a, const EmployeeRecord &b) {
-        return a.netSalary > b.netSalary;
-    });
-
-    cout << "\nSorted Employees by Net Salary (High to Low):\n";
-    for (const auto &record : records) {
-        cout << left << setw(15) << record.type << " | " << setw(20) << record.name << " | Net Salary: $" << fixed << setprecision(2) << record.netSalary << endl;
-    }
+void displayMenu()
+{
+    cout << "\n==============================================";
+    cout << "\n Employee Management System";
+    cout << "\n==============================================";
+    cout << "\n1. Add Full-Time Employee";
+    cout << "\n2. Add Part-Time Employee";
+    cout << "\n3. Display Full-Time Employee Details";
+    cout << "\n4. Display Part-Time Employee Details";
+    cout << "\n5. Exit";
+    cout << "\n==============================================\n";
+    cout << "Enter your choice: ";
 }
 
-int main() {
+int main()
+{
+    vector<FullTime> fullTimeEmployees;
+    vector<PartTime> partTimeEmployees;
     int choice;
 
-    while (true) {
-        cout << "\nMenu:\n";
-        cout << "1. Add Employee\n";
-        cout << "2. View Full-Time Employees\n";
-        cout << "3. View Part-Time Employees\n";
-        cout << "4. View All Employees (Sorted by Net Salary)\n";
-        cout << "5. Exit\n";
-        cout << "Choose an option: ";
+    do
+    {
+        displayMenu();
         cin >> choice;
 
-        switch (choice) {
-        case 1: {
-            string empType;
-            cout << "Enter employee type (Fulltime/Part-time): ";
-            cin >> empType;
-
-            if (empType == "Fulltime") {
-                FullTime ft;
-                ft.setFullTimeDetails();
-                fullTimeEmployees.push_back(ft);
-            } else if (empType == "Part-time") {
-                PartTime pt;
-                pt.setPartTimeDetails();
-                partTimeEmployees.push_back(pt);
-            } else {
-                cout << "Invalid type!" << endl;
-            }
+        switch (choice)
+        {
+        case 1:
+        {
+            FullTime ft;
+            ft.setFullTimeData();
+            fullTimeEmployees.push_back(ft);
             break;
         }
         case 2:
-            for (const auto &ft : fullTimeEmployees) {
-                ft.displayFullTimeDetails();
-            }
+        {
+            PartTime pt;
+            pt.setPartTimeData();
+            partTimeEmployees.push_back(pt);
             break;
-        case 3:
-            for (const auto &pt : partTimeEmployees) {
-                pt.displayPartTimeDetails();
-            }
-            break;
-        case 4:
-            displayAllEmployeesSorted();
-            break;
-        case 5:
-            cout << "Exiting program. Goodbye!" << endl;
-            return 0;
-        default:
-            cout << "Invalid choice! Try again." << endl;
         }
-    }
+        case 3:
+        {
+            for (const auto &ft : fullTimeEmployees)
+            {
+                ft.getFullTimeData();
+            }
+            break;
+        }
+        case 4:
+        {
+            for (const auto &pt : partTimeEmployees)
+            {
+                pt.getPartTimeData();
+            }
+            break;
+        }
+        case 5:
+            cout << "Exiting program..." << endl;
+            break;
+        default:
+            cout << "Invalid choice. Please try again." << endl;
+        }
+
+    } while (choice != 5);
+
+    return 0;
 }
